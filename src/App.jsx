@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   team,
   games,
@@ -8,14 +8,23 @@ import {
   announcements
 } from './data';
 import './App.css';
-
+import SignUp from './SignUp'
+import PlayerProfile from './PlayerProfile';
+import LogIn from './LogIn';
+import { supabase } from './supabaseClient';
+import AdminDashboard from './AdminDashboard';
 const pages = [
   'Home',
   'Schedule',
   'Roster',
   'Statistics',
   'Standings',
-  'About'
+  'About' ,
+  'Sign Up' ,
+  'Log In' ,
+  'Player Profile' ,
+  'Admin Dashboard'
+
 ];
 
 function formatDate(date) {
@@ -30,6 +39,66 @@ function formatDate(date) {
 }
 
 function App() {
+  const [approvedPlayers, setApprovedPlayers] = useState([]);
+  useEffect(() => {
+  async function loadApprovedPlayers() {
+    const { data, error } = await supabase
+      .from('approved_roster')
+      .select('*');
+
+    if (error) {
+      console.error('Error loading roster:', error.message);
+    } else {
+      setApprovedPlayers(data || []);
+    }
+  }
+
+  loadApprovedPlayers();
+}, []);
+  const [user, setUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  useEffect(() => {
+  async function checkAdmin() {
+    if (!user) {
+      setIsAdmin(false);
+      return;
+    }
+
+    const { data, error } = await supabase
+      .from('admin_users')
+      .select('user_id')
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    setIsAdmin(!error && !!data);
+  }
+
+  checkAdmin();
+}, [user]);
+
+useEffect(() => {
+  // Check whether someone is already logged in
+  supabase.auth.getUser().then(({ data }) => {
+    setUser(data.user);
+  });
+
+  // Detect when someone logs in or logs out
+  const { data: { subscription } } =
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+
+  return () => subscription.unsubscribe();
+}, []);
+async function handleLogOut() {
+  const { error } = await supabase.auth.signOut();
+
+  if (error) {
+    alert('Error logging out: ' + error.message);
+  } else {
+    setPage('Home');
+  }
+}
   const [page, setPage] = useState('Home');
   const [menuOpen, setMenuOpen] = useState(false);
   const [search, setSearch] = useState('');
@@ -52,7 +121,20 @@ function App() {
     .filter(game => game.status === 'Upcoming')
     .sort((a, b) => a.date.localeCompare(b.date));
 
-  const filteredPlayers = players.filter(player => {
+  const filteredPlayers = approvedPlayers.map(player => ({
+  id: player.id,
+  name: player.full_name,
+  number: player.jersey_number,
+  position: player.position,
+  year: player.class_year,
+  games: player.games,
+goals: player.goals,
+assists: player.assists,
+groundBalls: player.ground_balls,
+saves: player.saves,
+goalsAllowed: player.goals_allowed,
+minutesPlayed: player.minutes_played
+})).filter(player => {
     const matchesSearch = player.name
       .toLowerCase()
       .includes(search.toLowerCase());
@@ -171,7 +253,19 @@ function App() {
         </button>
 
         <nav className={menuOpen ? 'open' : ''}>
-          {pages.map(item => (
+          {pages
+  .filter(item => {
+  if (!user) {
+    return !['Player Profile', 'Admin Dashboard', 'Log Out'].includes(item);
+  }
+
+  if (isAdmin) {
+    return !['Log In', 'Sign Up'].includes(item);
+  }
+
+  return !['Log In', 'Sign Up', 'Admin Dashboard'].includes(item);
+})
+  .map(item => (
             <button
               key={item}
               className={page === item ? 'active' : ''}
@@ -180,6 +274,11 @@ function App() {
               {item}
             </button>
           ))}
+          {user && (
+  <button onClick={handleLogOut}>
+    Log Out
+  </button>
+)}
         </nav>
       </header>
 
@@ -360,11 +459,48 @@ function App() {
                   <div className="player-number">
                     #{player.number}
                   </div>
-                  <div className="player-details">
-                    <h3>{player.name}</h3>
-                    <p>{player.position}</p>
-                    <span>{player.year}</span>
-                  </div>
+                  
+<div className="player-details">
+  <h3>{player.name}</h3>
+  <p>{player.position}</p>
+  <span>{player.year}</span>
+
+  {player.position === 'Goalie' ? (
+    <div className="player-stats">
+      <p>Games: {player.games}</p>
+      <p>Saves: {player.saves}</p>
+      <p>Goals Allowed: {player.goalsAllowed}</p>
+      <p>
+        Save Percentage: {
+          (Number(player.saves) + Number(player.goalsAllowed)) > 0
+            ? (
+                Number(player.saves) /
+                (Number(player.saves) + Number(player.goalsAllowed)) * 100
+              ).toFixed(1) + '%'
+            : '0.0%'
+        }
+      </p>
+      <p>
+        GAA: {
+          Number(player.minutesPlayed) > 0
+            ? (
+                Number(player.goalsAllowed) * 60 /
+                Number(player.minutesPlayed)
+              ).toFixed(2)
+            : 'N/A'
+        }
+      </p>
+    </div>
+  ) : (
+    <div className="player-stats">
+      <p>Games: {player.games}</p>
+      <p>Goals: {player.goals}</p>
+      <p>Assists: {player.assists}</p>
+      <p>Ground Balls: {player.groundBalls}</p>
+    </div>
+  )}
+</div>
+
                 </div>
               ))}
             </div>
@@ -522,6 +658,23 @@ function App() {
             </div>
           </section>
         )}
+        {page === 'Sign Up' && <SignUp />}
+        {page === 'Player Profile' && (
+        
+  user ? (
+    <PlayerProfile />
+  ) : (
+    <p>Please log in to access your player profile.</p>
+  )
+)}
+        {page === 'Log In' && <LogIn />}
+        {page === 'Admin Dashboard' && (
+  isAdmin ? (
+    <AdminDashboard />
+  ) : (
+    <p>Administrator access required.</p>
+  )
+)}
       </main>
 
       <footer className="footer">
