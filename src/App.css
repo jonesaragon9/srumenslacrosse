@@ -641,3 +641,69 @@ tbody tr:hover {
     padding: 15px;
   }
 }
+
+/* Homepage: original SRU Lacrosse artwork with real, working buttons. */
+.lacrosse-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  min-height: 0;
+  padding: 0 0 52px;
+  background: #031610;
+  overflow: hidden;
+  color: #fff;
+}
+
+.lacrosse-hero-artwork {
+  width: 100%;
+  background: #031610;
+  line-height: 0;
+}
+
+.lacrosse-hero-artwork img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.lacrosse-hero-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 22px;
+  padding: 12px 20px 0;
+  margin-top: -2px;
+}
+
+.lacrosse-hero-buttons .btn-primary,
+.lacrosse-hero-buttons .btn-outline {
+  min-width: 245px;
+  min-height: 66px;
+  border-radius: 10px;
+  font-size: 18px;
+  transition: transform .2s ease, background .2s ease;
+}
+
+.lacrosse-hero-buttons .btn-primary {
+  background: #007a53;
+  border-color: #007a53;
+  color: white;
+}
+
+.lacrosse-hero-buttons .btn-primary:hover { background: #009767; transform: translateY(-2px); }
+.lacrosse-hero-buttons .btn-outline:hover { background: rgba(255,255,255,.13); transform: translateY(-2px); }
+.lacrosse-hero-buttons button span { margin-right: 8px; }
+
+/* Darker, more refined navigation matching the reference. */
+.site-header { background: #06130f; border-bottom: 1px solid rgba(255,255,255,.1); }
+.site-header nav button.active { background: transparent; box-shadow: inset 0 -3px 0 #009c68; border-radius: 0; }
+.site-header nav button:hover { background: rgba(0,103,71,.45); }
+.brand-mark { background: #006747; }
+
+@media (max-width: 650px) {
+  .lacrosse-hero { padding: 0 0 32px; min-height: 0; }
+  .lacrosse-hero-buttons { gap: 12px; padding: 14px 18px 0; }
+  .lacrosse-hero-buttons .btn-primary,
+  .lacrosse-hero-buttons .btn-outline { min-width: min(100%, 300px); width: 100%; min-height: 52px; font-size: 16px; }
+}

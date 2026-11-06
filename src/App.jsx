@@ -8,6 +8,7 @@ import {
   announcements
 } from './data';
 import './App.css';
+import lacrosseHeroArt from './assets/lacrosse-hero-art.png';
 import SignUp from './SignUp'
 import PlayerProfile from './PlayerProfile';
 import LogIn from './LogIn';
@@ -285,33 +286,20 @@ minutesPlayed: player.minutes_played
       <main>
         {page === 'Home' && (
           <>
-            <section className="hero">
-              <div className="hero-content">
-                <span className="eyebrow">
-                  SLIPPERY ROCK UNIVERSITY
-                </span>
-                <h1>
-                  BUILT FOR
-                  <span> THE ROCK.</span>
-                </h1>
-                <p>
-                  SRU Men's Club Lacrosse.
-                  One team. One goal.
-                </p>
-                <div className="hero-actions">
-                  <button
-                    className="btn-primary"
-                    onClick={() => navigate('Schedule')}
-                  >
-                    View Schedule
-                  </button>
-                  <button
-                    className="btn-outline"
-                    onClick={() => navigate('Roster')}
-                  >
-                    Meet the Team
-                  </button>
-                </div>
+            <section className="hero lacrosse-hero" aria-label="SRU Men's Club Lacrosse">
+              <div className="lacrosse-hero-artwork">
+                <img
+                  src={lacrosseHeroArt}
+                  alt="SRU green S logo above LACROSSE and crossed lacrosse sticks on a nighttime lacrosse field"
+                />
+              </div>
+              <div className="lacrosse-hero-buttons">
+                <button className="btn-primary" onClick={() => navigate('Schedule')}>
+                  <span aria-hidden="true">▦</span> View Schedule
+                </button>
+                <button className="btn-outline" onClick={() => navigate('Roster')}>
+                  <span aria-hidden="true">♟</span> Meet the Team
+                </button>
               </div>
             </section>
 
