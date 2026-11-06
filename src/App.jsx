@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import {
   team,
-  games,
+  games as sampleGames,
   players,
   standings,
   announcements
@@ -20,7 +20,8 @@ const pages = [
   'Roster',
   'Statistics',
   'Standings',
-  'About' ,
+  'About',
+  'Fundraising',
   'Sign Up' ,
   'Log In' ,
   'Player Profile' ,
@@ -41,6 +42,26 @@ function formatDate(date) {
 
 function App() {
   const [approvedPlayers, setApprovedPlayers] = useState([]);
+  const [games, setGames] = useState(sampleGames);
+  const [scheduleError, setScheduleError] = useState('');
+
+  async function loadGames() {
+    const { data, error } = await supabase.from('games').select('*').order('date', { ascending: true });
+    if (error) {
+      console.error('Unable to load games:', error.message);
+      setScheduleError('Live schedule unavailable. Showing the original schedule until the database is configured.');
+      return;
+    }
+    setScheduleError('');
+    setGames((data || []).map(game => ({
+      id: game.id, date: game.date, opponent: game.opponent,
+      location: game.location, time: game.time, status: game.status,
+      sruScore: game.sru_score, opponentScore: game.opponent_score
+    })));
+  }
+
+  useEffect(() => { loadGames(); }, []);
+
   useEffect(() => {
   async function loadApprovedPlayers() {
     const { data, error } = await supabase
@@ -284,6 +305,7 @@ minutesPlayed: player.minutes_played
       </header>
 
       <main>
+        {scheduleError && <p className="schedule-notice" role="status">{scheduleError}</p>}
         {page === 'Home' && (
           <>
             <section className="hero lacrosse-hero" aria-label="SRU Men's Club Lacrosse">
@@ -313,7 +335,7 @@ minutesPlayed: player.minutes_played
                 <span>LOSSES</span>
               </div>
               <div>
-                <strong>{players.length}</strong>
+                <strong>{approvedPlayers.length}</strong>
                 <span>ROSTER ENTRIES</span>
               </div>
               <div>
@@ -611,37 +633,38 @@ minutesPlayed: player.minutes_played
         )}
 
         {page === 'About' && (
-          <section className="content-section page-section">
-            <div className="page-title">
-              <span className="eyebrow green">
-                ABOUT THE ROCK
-              </span>
-              <h1>SRU Men's Club Lacrosse</h1>
-              <p>{team.description}</p>
-            </div>
-
-            <div className="about-grid">
-              <div className="info-card">
-                <h3>Our University</h3>
-                <p>{team.school}</p>
-                <p>{team.location}</p>
-              </div>
-
-              <div className="info-card">
-                <h3>Our Season</h3>
-                <p>{team.season}</p>
-                <p>
-                  Schedules, scores, and team
-                  announcements.
-                </p>
-              </div>
-
-              <div className="info-card">
-                <h3>Contact the Team</h3>
-                <p>
-                  Official contact information
-                  will be added after confirmation.
-                </p>
+          <div className="about-page">
+            <section className="about-intro">
+              <span className="about-kicker">MORE THAN A GAME</span>
+              <h1>Find Your Team. Find Your People.</h1>
+              <p>At SRU Men's Club Lacrosse, it's about more than what happens on the field. It's a chance to meet new people, build lasting friendships, stay active, and be part of something bigger during your time at Slippery Rock.</p>
+              <button className="about-cta" onClick={() => navigate('Roster')}>Meet the Team</button>
+            </section>
+            <section className="about-benefits" aria-label="Why join the team">
+              <article className="about-benefit"><span className="benefit-icon">01</span><h2>Make Friends</h2><p>Meet students with shared interests, find a supportive group, and build friendships on and off the field.</p></article>
+              <article className="about-benefit"><span className="benefit-icon">02</span><h2>New to Lacrosse? Welcome.</h2><p>You don't need years of experience to get involved. Come ready to learn, practice your skills, and grow with the team.</p></article>
+              <article className="about-benefit"><span className="benefit-icon">03</span><h2>Get in the Action</h2><p>Lacrosse is a fast-paced, hands-on sport that brings together teamwork, movement, strategy, and plenty of energy.</p></article>
+              <article className="about-benefit"><span className="benefit-icon">04</span><h2>Enjoy Campus Life</h2><p>From practices and games to team hangouts and social activities, there are opportunities to make great college memories.</p></article>
+            </section>
+            <section className="about-details">
+              <div className="about-detail-card"><span className="about-kicker">OUR HOME</span><h2>Slippery Rock University</h2><p>{team.school}</p><p>{team.location}</p><p>Season: {team.season}</p></div>
+              <div className="about-detail-card"><span className="about-kicker">GET IN TOUCH</span><h2>Contact the Team</h2><p><strong>Shawn Murray</strong><br />Team President</p><a href="mailto:stm1013@sru.edu">stm1013@sru.edu</a><p>Questions about joining, practices, or the team? Reach out!</p></div>
+              <div className="about-detail-card"><span className="about-kicker">SUPPORT THE ROCK</span><h2>Help Our Team Grow</h2><p>Support team activities and help make more opportunities possible for SRU men's club lacrosse.</p><button className="about-cta" onClick={() => navigate('Fundraising')}>Support the Team</button></div>
+            </section>
+          </div>
+        )}
+        {page === 'Fundraising' && (
+          <section className="fundraising-page">
+            <div className="fundraising-panel">
+              <span className="about-kicker">SUPPORT SRU MEN'S CLUB LACROSSE</span>
+              <h1>Help Us Keep the Game Growing.</h1>
+              <p>Every contribution helps support the team's activities and the student-athletes who make SRU men's club lacrosse possible. Thank you for cheering us on!</p>
+              <div className="fundraising-payment">
+                <span className="fundraising-platform">VENMO</span>
+                <h2>@Shawn-Murray-120</h2>
+                <p>Venmo recipient: Shawn Murray</p>
+                <a className="fundraising-link" href="https://venmo.com/u/Shawn-Murray-120" target="_blank" rel="noopener noreferrer">Open Venmo</a>
+                <p className="fundraising-note">Before sending money, confirm the recipient and account details with the team president at <a href="mailto:stm1013@sru.edu">stm1013@sru.edu</a>. This is a team-provided Venmo handle, not a university payment portal.</p>
               </div>
             </div>
           </section>
@@ -658,7 +681,7 @@ minutesPlayed: player.minutes_played
         {page === 'Log In' && <LogIn />}
         {page === 'Admin Dashboard' && (
   isAdmin ? (
-    <AdminDashboard />
+    <AdminDashboard onGamesChanged={loadGames} />
   ) : (
     <p>Administrator access required.</p>
   )

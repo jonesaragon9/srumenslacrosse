@@ -707,3 +707,45 @@ tbody tr:hover {
   .lacrosse-hero-buttons .btn-primary,
   .lacrosse-hero-buttons .btn-outline { min-width: min(100%, 300px); width: 100%; min-height: 52px; font-size: 16px; }
 }
+
+/* About and Fundraising */
+.about-page, .fundraising-page { max-width: 1220px; margin: 36px auto 70px; padding: 0 22px; }
+.about-intro { border-radius: 18px; padding: clamp(40px, 7vw, 90px); color: #fff; background: radial-gradient(circle at 80% 10%, rgba(40,171,111,.25), transparent 40%), linear-gradient(125deg,#071a14,#00583e 90%); }
+.about-kicker { display:block; color:#46d39a; font-size:12px; font-weight:900; letter-spacing:3px; margin-bottom:15px; }
+.about-intro h1, .fundraising-panel h1 { font-size:clamp(34px,5vw,65px); line-height:1.06; max-width:760px; margin:0 0 22px; letter-spacing:-1.5px; }
+.about-intro p, .fundraising-panel>p { max-width:730px; line-height:1.75; font-size:18px; color:#e2f0e8; }
+.about-cta, .fundraising-link { display:inline-block; margin-top:14px; padding:14px 22px; border:0; border-radius:8px; background:#1cbb7a; color:#062619; text-decoration:none; font-weight:900; cursor:pointer; }
+.about-cta:hover, .fundraising-link:hover { background:#7be6b5; }
+.about-benefits { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin:22px 0; }
+.about-benefit, .about-detail-card { background:#fff; border:1px solid #dce9df; border-radius:14px; padding:30px; box-shadow:0 6px 20px rgba(0,0,0,.035); }
+.about-benefit h2, .about-detail-card h2 { font-size:24px; margin:12px 0; }
+.about-benefit p, .about-detail-card p { color:#53645a; line-height:1.7; }
+.benefit-icon { font-size:13px; font-weight:900; color:#006747; background:#e6f6ed; padding:9px 11px; border-radius:8px; }
+.about-details { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; }
+.about-detail-card .about-kicker { color:#006747; }
+.about-detail-card a { color:#006747; font-weight:800; overflow-wrap:anywhere; }
+.fundraising-panel { background:linear-gradient(135deg,#071a14,#00543a); border-radius:18px; padding:clamp(30px,6vw,75px); color:white; }
+.fundraising-payment { margin-top:30px; max-width:610px; background:white; color:#14241b; padding:clamp(24px,4vw,40px); border-radius:14px; }
+.fundraising-platform { font-size:12px; font-weight:900; letter-spacing:3px; color:#007e58; }
+.fundraising-payment h2 { font-size:clamp(25px,4vw,38px); overflow-wrap:anywhere; }
+.fundraising-payment p { line-height:1.6; }
+.fundraising-note { font-size:12px; color:#59665e; margin-top:25px; }
+.fundraising-note a { color:#006747; }
+@media(max-width:760px) { .about-benefits,.about-details { grid-template-columns:1fr; } .about-page,.fundraising-page { padding:0 12px; margin-top:18px; } .about-intro,.fundraising-panel { padding:35px 24px; } }
+
+/* Admin game management */
+.admin-game-form { background: #f7faf8; border: 1px solid #dbe7df; border-radius: 12px; padding: 20px; margin: 20px 0; }
+.admin-game-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 18px; }
+.admin-game-grid label { display: flex; flex-direction: column; gap: 6px; font-weight: 700; }
+.admin-game-grid input, .admin-game-grid select { padding: 11px; border: 1px solid #bdcdc3; border-radius: 6px; width: 100%; background: white; }
+.admin-game-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.admin-game-actions button { padding: 11px 16px; border: none; border-radius: 6px; font-weight: 700; background: #006747; color: white; }
+.admin-game-actions button:disabled { opacity: .55; cursor: not-allowed; }
+.admin-game-actions .danger { background: #a32626; }
+.admin-game-actions .secondary { background: #344b3e; }
+.admin-game-list { display: grid; gap: 12px; }
+.admin-game-item { padding: 16px; border: 1px solid #dbe7df; border-radius: 10px; background: white; }
+.admin-game-item h3 { margin: 0 0 6px; }
+.admin-game-item p { margin: 6px 0; }
+.schedule-notice { max-width: 1100px; margin: 15px auto; padding: 12px 18px; background: #fff7dd; border: 1px solid #e7cf87; border-radius: 8px; }
+@media (max-width: 650px) { .admin-game-grid { grid-template-columns: 1fr; } }
